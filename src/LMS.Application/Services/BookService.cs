@@ -83,5 +83,24 @@ namespace LMS.Application.Services
             };
         }
 
+        public async Task<PagedBooksResponseDto> GetAllBooksAsync(int page, int pageSize, string? search)
+        {
+            var (books, totalCount) = await bookRepository.GetAllAsync(page, pageSize, search);
+
+            return new PagedBooksResponseDto
+            {
+                Items = books.Select(b => new ResponseOfAllTheBooks
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    BookState = b.State.ToString()
+                }).ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
     }
 }

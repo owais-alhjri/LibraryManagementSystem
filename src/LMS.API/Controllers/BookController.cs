@@ -12,7 +12,14 @@ namespace LMS.API.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult> GetAllBooks() => Ok(await bookService.GetAllBooksAsync());
+        public async Task<ActionResult> GetAllBooks(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null)
+        {
+            var result = await bookService.GetAllBooksAsync(page, pageSize, search);
+            return Ok(result);
+        }
 
         [Authorize]
         [HttpGet("{id:guid}")]

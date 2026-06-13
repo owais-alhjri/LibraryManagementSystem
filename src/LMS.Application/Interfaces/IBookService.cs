@@ -11,5 +11,6 @@ namespace LMS.Application.Interfaces
         Task<Book> UpdateBookAsync(UpdateBookPatchDto updateBook, Guid id);
         Task<Book> DeleteBook(Guid id);
         Task<ResponseBookDto?> GetBookByIdAsync(Guid id);
+        Task<PagedBooksResponseDto> GetAllBooksAsync(int page, int pageSize, string? search);
     }
 }

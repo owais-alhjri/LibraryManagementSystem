@@ -5,44 +5,58 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Infrastructure.Repositories
 {
-    public class BookRepository :IBookRepository
+    public class BookRepository(LmsDbContext dbContext) : IBookRepository
     {
-        private readonly LmsDbContext _dbContext;
-
-        public BookRepository(LmsDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         public async Task AddAsync(Book book)
         {
-            await _dbContext.Books.AddAsync(book);
+            await dbContext.Books.AddAsync(book);
         }
 
         public async Task SaveChangesAsync()
         {
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<List<Book>> GetAllAsync()
         {
-            return await _dbContext.Books.AsNoTracking().ToListAsync();
+            return await dbContext.Books.AsNoTracking().ToListAsync();
         }  
 
         public async Task<Book?> GetByIdAsync(Guid id )
         {
-             var book = await _dbContext.Books.FindAsync(id);
+             var book = await dbContext.Books.FindAsync(id);
             return book;
         }
 
         public async Task DeleteByIdAsync(Guid id)
         {
-            var book = await _dbContext.Books.FindAsync(id);
+            var book = await dbContext.Books.FindAsync(id);
             if (book == null)
             {
                 return;
             }
-            _dbContext.Remove(book);
+            dbContext.Remove(book);
+        }
+
+        public async Task<(List<Book> Items, int TotalCount)> GetAllAsync(int page, int pageSize, string? search)
+        {
+            var query = dbContext.Books.AsNoTracking();
+            if (Equals(!string.IsNullOrWhiteSpace(search)))
+            {
+                var term = search.ToLower();
+                query = query.Where(b =>
+                    b.Title.ToLower().Contains(term) ||
+                    b.Author.ToLower().Contains(term));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query.Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+
         }
 
     }
