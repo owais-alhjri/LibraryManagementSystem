@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using LMS.Domain.Entities;
+using LMS.Domain.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,7 +122,22 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<LmsDbContext>();
     db.Database.Migrate();
+
+    var adminEmail = app.Configuration["AdminSettings:Email"]!;
+    var adminPassword = app.Configuration["AdminSettings:Password"]!;
+    var adminName = app.Configuration["AdminSettings:Name"]!;
+
+    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasherService>();
+
+    if (!db.Users.Any(u => u.Email == adminEmail))
+    {
+        var admin = new User(adminName, adminEmail, hasher.Hash(adminPassword));
+        admin.SetRole(Roles.ADMIN);
+        db.Users.Add(admin);
+        await db.SaveChangesAsync();
+    }
 }
+
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

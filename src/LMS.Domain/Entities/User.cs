@@ -57,5 +57,10 @@ namespace LMS.Domain.Entities
             }
         }
 
+        public void SetRole(Roles role)
+        {
+            Role = role;
+        }
+
     }
 }

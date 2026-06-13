@@ -1,6 +1,6 @@
 ﻿using LMS.Domain.Enums;
 
-namespace LMS.Domain.Auth
+namespace LMS.Infrastructure.Security
 {
     public class JwtUserClaims
     {

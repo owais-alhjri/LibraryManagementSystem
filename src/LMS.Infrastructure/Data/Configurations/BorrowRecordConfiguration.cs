@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LMS.Infrastructure.Persistence.Configurations
 {
-    public class BorrowRecordConfigration : IEntityTypeConfiguration<BorrowRecord>
+    public class BorrowRecordConfiguration : IEntityTypeConfiguration<BorrowRecord>
     {
         public void Configure(EntityTypeBuilder<BorrowRecord> builder)
         {

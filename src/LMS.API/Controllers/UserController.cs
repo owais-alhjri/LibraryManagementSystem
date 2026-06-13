@@ -1,6 +1,6 @@
 ﻿using LMS.Application.DTOs.User;
 using LMS.Application.Interfaces;
-using LMS.Domain.Auth;
+using LMS.Infrastructure.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.API.Controllers

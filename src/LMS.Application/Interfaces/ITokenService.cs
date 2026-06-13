@@ -1,5 +1,4 @@
-﻿using LMS.Domain.Auth;
-using LMS.Domain.Entities;
+﻿using LMS.Infrastructure.Security;
 
 namespace LMS.Application.Interfaces
 {
