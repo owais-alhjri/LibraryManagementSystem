@@ -2,6 +2,7 @@
 using LMS.Application.DTOs.User;
 using LMS.Application.Interfaces;
 using LMS.Domain.Entities;
+using LMS.Domain.Enums;
 using LMS.Domain.Interfaces;
 
 namespace LMS.Application.Services
@@ -29,6 +30,15 @@ namespace LMS.Application.Services
         {
             var userEmail = await userRepository.GetByEmailAsync(email) ?? throw new NotFoundException("User email ", email);
             return userEmail;
+        }
+
+        public async Task UpdateRoleAsync(Guid id, Roles role)
+        {
+            var user = await userRepository.GetByIdAsync(id);
+            if (user == null) throw new NotFoundException("User not found",id);
+
+            user.SetRole(role);
+            await userRepository.UpdateAsync(user);
         }
 
 

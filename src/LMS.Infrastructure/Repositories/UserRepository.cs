@@ -34,5 +34,11 @@ namespace LMS.Infrastructure.Repositories
             return userEmail;
         }
 
+        public async Task UpdateAsync(User user)
+        {
+            _dbContext.Users.Update(user);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }

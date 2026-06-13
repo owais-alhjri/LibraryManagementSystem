@@ -1,6 +1,7 @@
 ﻿using LMS.Application.DTOs.User;
 using LMS.Application.Interfaces;
 using LMS.Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.API.Controllers
@@ -44,6 +45,14 @@ namespace LMS.API.Controllers
             var token = tokenService.GenerateToken(claims);
             return Ok(new AuthLoginResponseDto { Token = token });
 
+        }
+
+        [HttpPatch("{id}/role")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> UpdateRole(Guid id, [FromBody] UpdateRoleRequestDto request)
+        {
+            await userService.UpdateRoleAsync(id, request.Role);
+            return NoContent();
         }
 
 
