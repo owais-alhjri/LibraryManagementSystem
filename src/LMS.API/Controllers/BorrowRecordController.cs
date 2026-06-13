@@ -15,9 +15,9 @@ namespace LMS.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult> FetchBorrowedBook([FromRoute] Guid id)
         {
-            var borooed = await _borrowRecordService.GetBorrowedaRecordById(id);
+            var borrowRecord = await _borrowRecordService.GetBorrowedRecordById(id);
 
-            return Ok(borooed);
+            return Ok(borrowRecord);
         }
 
         [Authorize(Roles = "ADMIN,MEMBER")]

@@ -6,6 +6,6 @@ namespace LMS.Application.Interfaces
     {
         public Task<Guid> BorrowBook(BorrowRecordCreateDto borrowRecordCreateDto);
         public Task<ReturnBookResponseDto> ReturnBook(ReturnBookDto returnBookDto);
-        public Task<BorrowRecordResponseDto?> GetBorrowedaRecordById(Guid id);
+        public Task<BorrowRecordResponseDto?> GetBorrowedRecordById(Guid id);
     }
 }

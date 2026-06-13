@@ -7,18 +7,11 @@ using LMS.Domain.Interfaces;
 
 namespace LMS.Application.Services
 {
-    public class BookService : IBookService
+    public class BookService(IBookRepository bookRepository) : IBookService
     {
-        private readonly IBookRepository _bookRepository;
-
-        public BookService(IBookRepository bookRepository)
-        {
-            _bookRepository = bookRepository;
-        }
-
         public async Task<List<ResponseOfAllTheBooks>> GetAllBooksAsync()
         {
-            var books = await _bookRepository.GetAllAsync();
+            var books = await bookRepository.GetAllAsync();
 
             return books.Select(b => new ResponseOfAllTheBooks
             {
@@ -33,15 +26,15 @@ namespace LMS.Application.Services
         {
             var book = new Book(createBookDto.Title, createBookDto.Author);
 
-            await _bookRepository.AddAsync(book);
-            await _bookRepository.SaveChangesAsync();
+            await bookRepository.AddAsync(book);
+            await bookRepository.SaveChangesAsync();
 
             return book;
         }
 
         public async Task<Book> UpdateBookAsync(UpdateBookPatchDto updateBook, Guid id)
         {
-            var book = await _bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
+            var book = await bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
 
             BookState? parsedState = null;
 
@@ -61,7 +54,7 @@ namespace LMS.Application.Services
                 throw new ValidationException("At least one field mus be provided for update.");
             }
             book.UpdateBook(updateBook.Title, updateBook.Author, parsedState);
-            await _bookRepository.SaveChangesAsync();
+            await bookRepository.SaveChangesAsync();
 
             return book;
 
@@ -69,15 +62,15 @@ namespace LMS.Application.Services
 
         public async Task<Book> DeleteBook(Guid id)
         {
-            var book = await _bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
+            var book = await bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
 
-            await _bookRepository.DeleteByIdAsync(id);
-            await _bookRepository.SaveChangesAsync();
+            await bookRepository.DeleteByIdAsync(id);
+            await bookRepository.SaveChangesAsync();
             return book;
         }
         public async Task<ResponseBookDto?> GetBookByIdAsync(Guid id)
         {
-            var book = await _bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
+            var book = await bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
 
 
             return new ResponseBookDto

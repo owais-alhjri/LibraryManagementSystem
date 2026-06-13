@@ -7,22 +7,13 @@ namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(IUserService userService, IPasswordHasherService hasherService, ITokenService tokenService) : ControllerBase
     {
-        private readonly IUserService _userService;
-        private readonly IPasswordHasherService _hasherService;
-        private readonly ITokenService _tokenService;
-        public UserController(IUserService userService, IPasswordHasherService hasherService, ITokenService tokenService)
-        {
-            _userService = userService;
-            _hasherService = hasherService;
-            _tokenService = tokenService;
-        }
 
         [HttpPost]
         public async Task<ActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
-            var user = await _userService.AddUserAsync(registerUserDto);
+            var user = await userService.AddUserAsync(registerUserDto);
             return Ok(new ResponseUserDto
             {
                 Id = user.Id,
@@ -36,9 +27,9 @@ namespace LMS.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthLoginRequestDto request)
         {
-            var user = await _userService.GetUserByEmail(request.Email);
+            var user = await userService.GetUserByEmail(request.Email);
 
-            if (!_hasherService.Verify(user.PasswordHash, request.Password))
+            if (!hasherService.Verify(user.PasswordHash, request.Password))
             {
                 return Unauthorized();
             }
@@ -50,7 +41,7 @@ namespace LMS.API.Controllers
                 Role = user.Role
             };
 
-            var token = _tokenService.GenerateToken(claims);
+            var token = tokenService.GenerateToken(claims);
             return Ok(new AuthLoginResponseDto { Token = token });
 
         }

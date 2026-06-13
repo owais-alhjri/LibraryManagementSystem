@@ -7,28 +7,22 @@ namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookController : ControllerBase
+    public class BookController(IBookService bookService) : ControllerBase
     {
-        private readonly IBookService _bookService;
-
-        public BookController(IBookService bookService)
-        {
-            _bookService = bookService;
-        }
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult> GetAllBooks() => Ok(await _bookService.GetAllBooksAsync());
+        public async Task<ActionResult> GetAllBooks() => Ok(await bookService.GetAllBooksAsync());
 
         [Authorize]
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult> GetBookById([FromRoute] Guid id) => Ok(await _bookService.GetBookByIdAsync(id));
+        public async Task<ActionResult> GetBookById([FromRoute] Guid id) => Ok(await bookService.GetBookByIdAsync(id));
 
         [Authorize(Roles = "ADMIN,LIBRARIAN")]
         [HttpPost]
         public async Task<ActionResult> AddBook([FromBody] CreateBookDto createBookDto)
         {
-            var book = await _bookService.AddBookAsync(createBookDto);
+            var book = await bookService.AddBookAsync(createBookDto);
             return Ok(new ResponseBookDto
             {
                 Id = book.Id,
@@ -43,7 +37,7 @@ namespace LMS.API.Controllers
         [HttpPatch("{id:guid}")]
         public async Task<ActionResult> UpdateBook([FromBody] UpdateBookPatchDto updateBookDto, [FromRoute] Guid id)
         {
-            var book = await _bookService.UpdateBookAsync(updateBookDto, id);
+            var book = await bookService.UpdateBookAsync(updateBookDto, id);
             return Ok(new ResponseBookDto
             {
                 Id = book.Id,
@@ -59,7 +53,7 @@ namespace LMS.API.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteBook([FromRoute] Guid id)
         {
-            var book = await _bookService.DeleteBook(id);
+            var book = await bookService.DeleteBook(id);
 
             return Ok(new DeleteBookResponseDto
             {
