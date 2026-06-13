@@ -1,3 +1,7 @@
+# Angular
+lms-ui/node_modules/
+lms-ui/.angular/
+
 # ========================
 # .NET / ASP.NET Core
 # ========================
