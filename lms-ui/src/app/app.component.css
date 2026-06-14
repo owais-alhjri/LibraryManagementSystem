@@ -1,0 +1,26 @@
+.sidenav-container{
+  height: 100vh;
+}
+mat-sidenav{
+  width: 220px;
+  padding-top: 1rem;
+}
+
+.spacer{
+  flex: 1 1 auto;
+}
+
+.user-info{
+  font-size: 0.85rem;
+  margin-right: 1rem;
+  opacity: 0.85;
+}
+
+.content{
+  padding: 2rem;
+}
+
+.active-link{
+  background: rgb(0, 0, 0,0.08);
+  border-radius: 4px;
+}
