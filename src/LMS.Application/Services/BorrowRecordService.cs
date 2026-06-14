@@ -9,18 +9,13 @@ namespace LMS.Application.Services
     public class BorrowRecordService(IBorrowRecordRepository recordRepository, IBookRepository bookRepository, IUserRepository userRepository) : IBorrowRecordService
     {
 
-        public async Task<Guid> BorrowBook(BorrowRecordCreateDto borrowRecordCreateDto)
+        public async Task<Guid> BorrowBook(Guid userId, Guid bookId)
         {
-            var book = await bookRepository.GetByIdAsync(borrowRecordCreateDto.BookId);
-            if (book is null)
-            {
-                throw new NotFoundException("Book", borrowRecordCreateDto.BookId);
-            }
-            var user = await userRepository.GetByIdAsync(borrowRecordCreateDto.UserId);
-            if (user is null)
-            {
-                throw new NotFoundException("User", borrowRecordCreateDto.UserId);
-            }
+            var book = await bookRepository.GetByIdAsync(bookId)
+                       ?? throw new NotFoundException("Book", bookId);
+
+            var user = await userRepository.GetByIdAsync(userId)
+                       ?? throw new NotFoundException("User", userId);
 
             var borrow = new BorrowRecord(user, book);
             book.Borrow();
@@ -30,15 +25,13 @@ namespace LMS.Application.Services
             return borrow.Id;
         }
 
-        public async Task<ReturnBookResponseDto> ReturnBook(ReturnBookDto dto)
+        public async Task<ReturnBookResponseDto> ReturnBook(Guid userId, Guid bookId)
         {
-            var book = await bookRepository.GetByIdAsync(dto.BookId) ?? throw new NotFoundException("Book", dto.BookId);
+            var book = await bookRepository.GetByIdAsync(bookId)
+                       ?? throw new NotFoundException("Book", bookId);
 
-            var borrowRecord = await recordRepository.GetActiveBorrowAsync(dto.UserId, dto.BookId);
-            if (borrowRecord is null)
-            {
-                throw new NotFoundException("BorrowRecord", $"UserId={dto.UserId} ,BookId={dto.BookId}");
-            }
+            var borrowRecord = await recordRepository.GetActiveBorrowAsync(userId, bookId)
+                               ?? throw new NotFoundException("BorrowRecord", $"UserId={userId}, BookId={bookId}");
 
             borrowRecord.Return(book);
             await recordRepository.SaveChangesAsync();
@@ -46,7 +39,8 @@ namespace LMS.Application.Services
             return new ReturnBookResponseDto
             {
                 Id = borrowRecord.Id,
-                ReturnedDate = borrowRecord.ReturnedDate ?? throw new InvalidOperationException("Return date was not set.")
+                ReturnedDate = borrowRecord.ReturnedDate
+                               ?? throw new InvalidOperationException("Return date was not set.")
             };
         }
 

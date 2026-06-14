@@ -1,4 +1,5 @@
-﻿using LMS.Application.DTOs.BorrowRecords;
+﻿using System.Security.Claims;
+using LMS.Application.DTOs.BorrowRecords;
 using LMS.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,13 @@ namespace LMS.API.Controllers
     public class BorrowRecordController(IBorrowRecordService borrowRecordService) : ControllerBase
     {
         private readonly IBorrowRecordService _borrowRecordService = borrowRecordService;
+
+        private Guid GetCurrentUserId()
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                      ?? throw new UnauthorizedAccessException("User ID not found in token");
+            return Guid.Parse(sub);
+        }
 
         [Authorize(Roles = "ADMIN,LIBRARIAN,MEMBER")]
         [HttpGet("{id:guid}")]
@@ -24,11 +32,13 @@ namespace LMS.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Guid>> BorrowBook([FromBody] BorrowRecordCreateDto dto)
         {
-            var borrowId = await _borrowRecordService.BorrowBook(dto);
+            var userId = GetCurrentUserId();
+            var borrowId = await borrowRecordService.BorrowBook(userId, dto.BookId);
+
             var borrowedInfo = new BorrowRecordResponseDto
             {
                 Id = borrowId,
-                UserId = dto.UserId,
+                UserId = userId,
                 BookId = dto.BookId,
                 Message = "You have borrowed successfully",
                 BorrowedDate = DateTime.UtcNow
@@ -41,7 +51,8 @@ namespace LMS.API.Controllers
         [HttpPost("return")]
         public async Task<ActionResult<ReturnBookResponseDto>> ReturnBook([FromBody] ReturnBookDto dto)
         {
-            var result = await _borrowRecordService.ReturnBook(dto);
+            var userId = GetCurrentUserId();
+            var result = await _borrowRecordService.ReturnBook(userId, dto.BookId);
             return Ok(new ReturnBookResponseDto
             {
                 Id = result.Id,
