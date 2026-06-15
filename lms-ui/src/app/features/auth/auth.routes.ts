@@ -1,12 +1,19 @@
 import { Routes } from '@angular/router';
-import { Component } from '@angular/core';
-
-@Component({ standalone: true, template: '<p>Login coming soon</p>' })
-class PlaceholderComponent {}
 
 export const authRoutes: Routes = [
   {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
     path: 'login',
-    component: PlaceholderComponent
+    loadComponent:()=> 
+      import('./login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => 
+      import('./register/register.component').then(m => m.RegisterComponent)
   }
 ];

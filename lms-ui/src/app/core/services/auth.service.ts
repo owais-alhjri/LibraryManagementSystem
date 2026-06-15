@@ -1,3 +1,4 @@
+import { RegisterRequest } from './../models/auth.model';
 import { HttpClient } from "@angular/common/http";
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
@@ -34,8 +35,20 @@ export class AuthService{
   canManageBooks = computed(() => this.isAdmin() || this.isLibrarian());
 
   login(credentials: LoginRequest){
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/user/login`, credentials).pipe(
-      tap(res => this.setToken(res.token))
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/User/login`, credentials).pipe(
+      tap(res =>{
+         this.setToken(res.token);
+        this.router.navigate(['/books']);
+      })
+    );
+  }
+
+  register(data: RegisterRequest){
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/User`,data).pipe(
+      tap(res =>{
+        this.setToken(res.token);
+        this.router.navigate(['/books']);
+      })
     );
   }
 
