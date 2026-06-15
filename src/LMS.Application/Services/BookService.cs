@@ -9,18 +9,6 @@ namespace LMS.Application.Services
 {
     public class BookService(IBookRepository bookRepository) : IBookService
     {
-        public async Task<List<ResponseOfAllTheBooks>> GetAllBooksAsync()
-        {
-            var books = await bookRepository.GetAllAsync();
-
-            return books.Select(b => new ResponseOfAllTheBooks
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Author = b.Author,
-                BookState = b.State.ToString()
-            }).ToList();
-        }
 
         public async Task<Book> AddBookAsync(CreateBookDto createBookDto)
         {

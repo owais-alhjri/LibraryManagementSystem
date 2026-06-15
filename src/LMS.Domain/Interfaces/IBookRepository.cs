@@ -6,7 +6,6 @@ namespace LMS.Domain.Interfaces
     public interface IBookRepository
     {
         Task AddAsync(Book book);
-        Task<List<Book>> GetAllAsync();
 
         Task SaveChangesAsync();
 
@@ -15,5 +14,7 @@ namespace LMS.Domain.Interfaces
         Task DeleteByIdAsync(Guid id);
 
         Task<(List<Book> Items, int TotalCount)> GetAllAsync(int page, int pageSize, string? search);
+
+
     }
 }

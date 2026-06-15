@@ -17,11 +17,6 @@ namespace LMS.Infrastructure.Repositories
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<List<Book>> GetAllAsync()
-        {
-            return await dbContext.Books.AsNoTracking().ToListAsync();
-        }  
-
         public async Task<Book?> GetByIdAsync(Guid id )
         {
              var book = await dbContext.Books.FindAsync(id);
@@ -41,17 +36,19 @@ namespace LMS.Infrastructure.Repositories
         public async Task<(List<Book> Items, int TotalCount)> GetAllAsync(int page, int pageSize, string? search)
         {
             var query = dbContext.Books.AsNoTracking();
-            if (Equals(!string.IsNullOrWhiteSpace(search)))
+
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                var term = search.ToLower();
+                var term = $"%{search.Trim()}%";
                 query = query.Where(b =>
-                    b.Title.ToLower().Contains(term) ||
-                    b.Author.ToLower().Contains(term));
+                    EF.Functions.ILike(b.Title, term) ||
+                    EF.Functions.ILike(b.Author, term));
             }
 
             var totalCount = await query.CountAsync();
 
-            var items = await query.Skip((page - 1) * pageSize)
+            var items = await 
+                query.Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
