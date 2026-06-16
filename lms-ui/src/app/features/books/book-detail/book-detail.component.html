@@ -1,0 +1,17 @@
+<div>
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else if (errorMessage()) {
+    <p>{{ errorMessage() }}</p>
+  } @else if (book()) {
+    <h1>{{ book()!.title }}</h1>
+    <p>Author: {{ book()!.author }}</p>
+    <p>Status: {{ book()!.bookState }}</p>
+    <button (click)="onBorrow()"
+    [disabled]="book()?.bookState === 'Borrowed'">
+    {{ book()?.bookState === 'Borrowed' ? 'Already Borrowed' : 'Borrow' }}
+  </button>
+  } @else {
+    <p>Book not found</p>
+  }
+</div>

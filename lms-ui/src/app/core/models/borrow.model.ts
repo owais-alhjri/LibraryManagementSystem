@@ -20,3 +20,8 @@ export interface ReturnResponse {
   returnedDate: string;
   message: string;
 }
+
+export interface ConfirmDialogData{
+  title: string;
+  message: string;
+}

@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Book } from '../../../core/models/book.model';
 import { debounce, debounceTime, distinctUntilChanged, single } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BookCardComponent } from '../book-card/book-card.component';
 
 
 @Component({
@@ -24,7 +25,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatTableModule, MatPaginatorModule,
     MatFormFieldModule, MatInputModule,
     MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, MatChipsModule
+    MatProgressSpinnerModule, MatChipsModule,
+    BookCardComponent
   ],
   templateUrl: './books-list.component.html',
   styleUrl: './books-list.component.css'
@@ -99,6 +101,10 @@ export class BooksListComponent implements OnInit {
       case 'BORROWED': return 'warn';
       default: return '';
     }
+  }
+
+  onBorrow(book: Book){
+    console.log('Borrow clicked:', book);
   }
 
 }

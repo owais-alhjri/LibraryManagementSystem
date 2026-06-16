@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-header">
+    <h2>{{ book.title }}</h2>
+    <span class="state-badge" [class.borrowed]="book.bookState === 'Borrowed'">
+      {{ book.bookState }}
+    </span>
+  </div>
+
+  <p class="author">by {{ book.author }}</p>
+
+  <button (click)="onBorrow()" [disabled]="book.bookState === 'Borrowed'">
+    {{ book.bookState === "Borrowed" ? "Already Borrowed" : "Borrow" }}
+  </button>
+  <button [routerLink]="['/books', book.id]">View</button>
+</div>
