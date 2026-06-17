@@ -7,7 +7,7 @@ using LMS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LMS.Infrastructure.Persistence.Configurations
+namespace LMS.Infrastructure.Data.Configurations
 {
     public class BorrowRecordConfiguration : IEntityTypeConfiguration<BorrowRecord>
     {
@@ -24,8 +24,11 @@ namespace LMS.Infrastructure.Persistence.Configurations
             builder.Property(b => b.BorrowedDate)
                 .IsRequired();
             builder.Property(b => b.ReturnedDate);
+            builder.HasOne(b => b.Book)
+                .WithMany()
+                .HasForeignKey(b => b.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-                
         }
     }
 }

@@ -9,5 +9,6 @@ namespace LMS.Domain.Interfaces
         Task<BorrowRecord?> GetActiveBorrowAsync(Guid userId, Guid bookId);
 
         Task<BorrowRecord?> GetById(Guid id);
+        Task<List<BorrowRecord>> GetByUserIdAsync(Guid userId);
     }
 }

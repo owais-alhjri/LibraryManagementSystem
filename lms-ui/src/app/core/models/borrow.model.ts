@@ -2,9 +2,11 @@ export interface BorrowRecord {
   id: string;
   userId: string;
   bookId: string;
+  bookTitle: string;
   message: string;
   borrowedDate: string;
   returnedDate: string | null;
+  status: string;
 }
 
 export interface BorrowRequest {

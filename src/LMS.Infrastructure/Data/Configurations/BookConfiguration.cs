@@ -4,7 +4,7 @@ using LMS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LMS.Infrastructure.Persistence.Configurations
+namespace LMS.Infrastructure.Data.Configurations
 {
     public class BookConfiguration : IEntityTypeConfiguration<Book>
     {

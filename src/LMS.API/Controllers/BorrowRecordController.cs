@@ -60,5 +60,14 @@ namespace LMS.API.Controllers
                 Message = "Book returned successfully",
             });
         }
+
+        [Authorize]
+        [HttpGet("my")]
+        public async Task<ActionResult> GetMyBorrowRecord()
+        {
+            var userId = GetCurrentUserId();
+            var records = await borrowRecordService.GetBorrowRecordsByUserId(userId);
+            return Ok(records);
+        }
     }
 }

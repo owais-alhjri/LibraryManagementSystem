@@ -1,0 +1,31 @@
+<div class="page">
+  <h1>My Borrowed Books</h1>
+
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  } @else if (borrows().length === 0) {
+    <div class="empty-state">
+      <mat-icon>menu_book</mat-icon>
+      <p>No borrowed books found</p>
+    </div>
+  } @else {
+    <div class="borrowed-grid">
+      @for (borrowed of borrows(); track borrowed.id) {
+        <div class="borrow-card">
+          <h2>{{ borrowed.bookTitle }}</h2>
+          <p>Borrowed: {{ borrowed.borrowedDate | date:'mediumDate' }}</p>
+          <p class="status" [class.returned]="borrowed.status === 'Returned'">
+            {{ borrowed.status }}
+          </p>
+          <button
+            (click)="onReturn(borrowed)"
+            [disabled]="borrowed.status === 'Returned'">
+            {{ borrowed.status === 'Returned' ? 'Already Returned' : 'Return' }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

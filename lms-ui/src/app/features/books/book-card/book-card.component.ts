@@ -10,7 +10,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from "@angular/router";
-import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-book-card',
   standalone: true,

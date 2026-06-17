@@ -58,5 +58,20 @@ namespace LMS.Application.Services
                 ReturnedDate = borrowed.ReturnedDate
             };
         }
+
+        public async Task<List<BorrowRecordResponseDto>> GetBorrowRecordsByUserId(Guid userId)
+        {
+            var records = await recordRepository.GetByUserIdAsync(userId);
+            return records.Select(r => new BorrowRecordResponseDto
+            {
+                Id = r.Id,
+                UserId = r.UserId,
+                BookId = r.BookId,
+                BookTitle = r.Book.Title,
+                BorrowedDate = r.BorrowedDate,
+                ReturnedDate = r.ReturnedDate,
+                Message = "Borrow record"
+            }).ToList();
+        }
     }
 }

@@ -35,5 +35,15 @@ namespace LMS.Infrastructure.Repositories
             var borrowed = await _dbContext.BorrowRecords.FindAsync(id);
             return borrowed;
         }
+
+        public async Task<List<BorrowRecord>> GetByUserIdAsync(Guid userId)
+        {
+            return await _dbContext.BorrowRecords
+                .AsNoTracking()
+                .Include(r => r.Book)
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.BorrowedDate)
+                .ToListAsync();
+        }
     }
 }

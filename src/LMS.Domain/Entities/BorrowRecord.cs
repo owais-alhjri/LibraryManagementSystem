@@ -10,6 +10,7 @@ namespace LMS.Domain.Entities
 
         public DateTime BorrowedDate { get; private set; }
         public DateTime? ReturnedDate { get; private set; }
+        public Book Book { get; private set; }
 
         private BorrowRecord() { }
 
