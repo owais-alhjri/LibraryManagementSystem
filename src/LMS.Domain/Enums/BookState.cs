@@ -3,7 +3,7 @@
     public enum BookState
     {
         Available,
-        Borrowed
-
+        Borrowed,
+        Returned
     }
 }

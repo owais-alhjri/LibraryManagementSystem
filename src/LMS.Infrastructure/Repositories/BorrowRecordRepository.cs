@@ -40,6 +40,7 @@ namespace LMS.Infrastructure.Repositories
         {
             return await _dbContext.BorrowRecords
                 .AsNoTracking()
+                .IgnoreQueryFilters()
                 .Include(r => r.Book)
                 .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.BorrowedDate)

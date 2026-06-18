@@ -28,7 +28,10 @@ namespace LMS.Infrastructure.Data.Configurations
             builder.Property(b => b.State)
                 .IsRequired()
                 .HasConversion<string>();
-
+            builder.Property(b => b.IsDeleted)
+                .IsRequired()
+                .HasDefaultValue(false);
+            builder.HasQueryFilter(b => !b.IsDeleted);
             builder.HasIndex(b => b.Title)
                 .IsUnique();
         }

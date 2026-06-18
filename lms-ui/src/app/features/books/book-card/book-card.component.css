@@ -5,17 +5,26 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  background: #ffffff;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .card-header h2 {
   margin: 0;
   font-size: 1.1rem;
+  font-weight: 600;
+  color: #0b1a2e;
 }
 
 .state-badge {
@@ -24,6 +33,9 @@
   border-radius: 999px;
   background: #4caf50;
   color: white;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .state-badge.borrowed {
@@ -33,4 +45,49 @@
 .author {
   color: #666;
   margin: 0;
+  font-size: 0.9rem;
+}
+
+.card .actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.card button {
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s ease, opacity 0.12s ease;
+  background: #eef2f6;
+  color: #1a2332;
+}
+
+.card button:first-of-type {
+  background: #1a3a5c;
+  color: #fff;
+}
+
+.card button:first-of-type:hover:not(:disabled) {
+  background: #0f2a44;
+}
+
+.card button:first-of-type:disabled {
+  background: #b0bed5;
+  color: #f0f2f5;
+  cursor: not-allowed;
+}
+
+.card button:last-of-type {
+  background: transparent;
+  border: 1px solid #d0d7e2;
+}
+
+.card button:last-of-type:hover {
+  background: #f1f4f9;
+  border-color: #b0bed5;
 }

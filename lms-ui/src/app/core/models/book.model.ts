@@ -2,7 +2,7 @@ export interface Book{
   id: string;
   title: string;
   author: string;
-  bookState: string;
+  bookState: 'Available' | 'Borrowed' | 'Returned';
 }
 
 export interface PagedBooksResponse {

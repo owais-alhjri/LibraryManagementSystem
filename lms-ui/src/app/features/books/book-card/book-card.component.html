@@ -11,5 +11,16 @@
   <button (click)="onBorrow()" [disabled]="book.bookState === 'Borrowed'">
     {{ book.bookState === "Borrowed" ? "Already Borrowed" : "Borrow" }}
   </button>
-  <button [routerLink]="['/books', book.id]">View</button>
+  <button color="accent" [routerLink]="['/books', book.id]">
+    view
+  </button>
+
+  @if (auth.canManageBooks()) {
+    <button color="accent" [routerLink]="['/admin/edit-book', book.id]">
+      edit
+    </button>
+    <button (click)="onDelete()" color="accent">
+      delete
+    </button>
+  }
 </div>

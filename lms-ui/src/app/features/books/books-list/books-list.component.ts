@@ -12,27 +12,36 @@ import { MatTableModule } from '@angular/material/table';
 import { BooksService } from '../../../core/services/books.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Book } from '../../../core/models/book.model';
-import { debounce, debounceTime, distinctUntilChanged, single } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BookCardComponent } from '../book-card/book-card.component';
-
+import { RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { BorrowService } from '../../../core/services/borrow.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-books-list',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatTableModule, MatPaginatorModule,
-    MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, MatChipsModule,
-    BookCardComponent
+    MatTableModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    BookCardComponent,
+    RouterLink,
   ],
   templateUrl: './books-list.component.html',
-  styleUrl: './books-list.component.css'
+  styleUrl: './books-list.component.css',
 })
 export class BooksListComponent implements OnInit {
-
+  private dialog = inject(MatDialog);
+  private borrowService = inject(BorrowService);
   private booksService = inject(BooksService);
   auth = inject(AuthService);
 
@@ -54,14 +63,16 @@ export class BooksListComponent implements OnInit {
 
   constructor() {
     // takeUntilDestroyed must be called in constructor
-    this.searchControl.valueChanges.pipe(
-      debounceTime(400),              // wait 400ms after user stops typing
-      distinctUntilChanged(),         // only emit if value actually changed
-      takeUntilDestroyed()            // auto-unsubscribe when component destroys
-    ).subscribe(() => {
-      this.page.set(1);              // reset to page 1 on new search
-      this.loadBooks();
-    });
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(400), // wait 400ms after user stops typing
+        distinctUntilChanged(), // only emit if value actually changed
+        takeUntilDestroyed(), // auto-unsubscribe when component destroys
+      )
+      .subscribe(() => {
+        this.page.set(1); // reset to page 1 on new search
+        this.loadBooks();
+      });
   }
 
   ngOnInit() {
@@ -72,39 +83,72 @@ export class BooksListComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.booksService.getBooks(
-      this.page(),
-      this.pageSize(),
-      this.searchControl.value ?? ''
-    ).subscribe({
-      next: (res: PagedBooksResponse) => {
-        this.books.set(res.items);
-        this.totalCount.set(res.totalCount);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Failed to load books. Please try again.');
-        this.isLoading.set(false);
-      }
-    });
+    this.booksService
+      .getBooks(this.page(), this.pageSize(), this.searchControl.value ?? '')
+      .subscribe({
+        next: (res: PagedBooksResponse) => {
+          this.books.set(res.items);
+          this.totalCount.set(res.totalCount);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('Failed to load books. Please try again.');
+          this.isLoading.set(false);
+        },
+      });
   }
 
   onPageChange(event: PageEvent) {
-    this.page.set(event.pageIndex + 1);  // mat-paginator is 0-indexed
+    this.page.set(event.pageIndex + 1); // mat-paginator is 0-indexed
     this.pageSize.set(event.pageSize);
     this.loadBooks();
   }
 
   getStateColor(state: string): string {
     switch (state?.toUpperCase()) {
-      case 'AVAILABLE': return 'primary';
-      case 'BORROWED': return 'warn';
-      default: return '';
+      case 'AVAILABLE':
+        return 'primary';
+      case 'BORROWED':
+        return 'warn';
+        case 'RETURNED':
+          return 'accent'
+      default:
+        return '';
     }
   }
 
-  onBorrow(book: Book){
-    console.log('Borrow clicked:', book);
+  onBorrow(book: Book) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Borrow Book',
+        message: `Are you sure you want to borrow "${book?.title}"`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+
+      const bookId = book.id;
+      if (!bookId) return;
+
+      this.borrowService.borrowBook({ bookId }).subscribe({
+        next: () => {
+          this.books.update((books) =>
+            books.map((b) =>
+              b.id === bookId ? { ...b, bookState: 'Borrowed' } : b,
+            ),
+          );
+        },
+        error: () => {
+          console.error('failed to borrow book');
+        },
+      });
+    });
   }
 
+  onBookDeleted(bookId: string) {
+    this.books.update((books) => books.filter((book) => book.id !== bookId));
+
+    this.totalCount.update((count) => count - 1);
+  }
 }

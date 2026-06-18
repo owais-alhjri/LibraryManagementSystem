@@ -1,0 +1,73 @@
+<div class="page">
+  <mat-card>
+    <mat-card-header>Edit Book</mat-card-header>
+
+    <mat-card-content>
+
+      @if (isLoading()) {
+        <div class="loading-container">
+          <mat-spinner diameter="48" />
+          <p>Loading book...</p>
+        </div>
+      } @else if (errorMessage() && !form.dirty) {
+        <!-- only show full error if the book never loaded -->
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          {{ errorMessage() }}
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Book Title</mat-label>
+            <input matInput formControlName="title" placeholder="Dream high" />
+            <mat-icon matSuffix>book</mat-icon>
+            @if (title.invalid && title.touched) {
+              <mat-error>
+                {{
+                  title.errors?.["required"]
+                    ? "Title is required"
+                    : "Title must be 3-100 characters"
+                }}
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Author</mat-label>
+            <input matInput formControlName="author" placeholder="owais" />
+            <mat-icon matSuffix>person</mat-icon>
+            @if (author.invalid && author.touched) {
+              <mat-error>
+                {{
+                  author.errors?.["required"]
+                    ? "Author is required"
+                    : "Author must be 3-100 characters"
+                }}
+              </mat-error>
+            }
+          </mat-form-field>
+
+          @if (errorMessage()) {
+            <div class="error-message">
+              <mat-icon>error_outline</mat-icon>
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="form.invalid || isSubmitting">
+            @if (isSubmitting) {
+              <mat-spinner diameter="20" />
+            } @else {
+              Submit
+            }
+          </button>
+        </form>
+      }
+
+    </mat-card-content>
+  </mat-card>
+</div>

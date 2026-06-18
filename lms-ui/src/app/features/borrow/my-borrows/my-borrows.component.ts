@@ -61,14 +61,17 @@ export class MyBorrowsComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
-
+      console.log("return", result);
       this.borrowService.returnBook({ bookId: borrowed.bookId }).subscribe({
         next: () => {
           this.borrows.update((records) =>
             records.map((r) =>
-              r.id === borrowed.id ? { ...r, status: 'Returned' } : r,
-            ),
-          );
+              r.id === borrowed.id 
+              ? { ...r, status: 'Returned', returnedDate: new Date().toISOString() }
+               : r,
+            )
+        );
+        
         },
         error: () => {
           console.error('Failed to return book');

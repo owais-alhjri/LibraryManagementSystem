@@ -6,7 +6,7 @@ export interface BorrowRecord {
   message: string;
   borrowedDate: string;
   returnedDate: string | null;
-  status: string;
+  status: 'Available' | 'Borrowed' | 'Returned';
 }
 
 export interface BorrowRequest {

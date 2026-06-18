@@ -4,7 +4,6 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BooksService } from '../../../core/services/books.service';
 import { Book } from '../../../core/models/book.model';
-import { Observable } from 'rxjs';
 import { BorrowService } from '../../../core/services/borrow.service';
 
 @Component({

@@ -3,7 +3,7 @@
     <h1>Books</h1>
 
     @if (auth.canManageBooks()) {
-      <button mat-raised-button color="primary">
+      <button mat-raised-button color="primary" routerLink="/admin/add-book">
         <mat-icon>add</mat-icon>
         Add Book
       </button>
@@ -49,6 +49,7 @@
         @for (book of books(); track book.id) {
           <app-book-card
           [book]="book"
+          (deleted)="onBookDeleted($event)"
           (borrow)="onBorrow($event)" />
         }
       </div>

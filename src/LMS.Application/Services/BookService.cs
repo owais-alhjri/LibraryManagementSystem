@@ -52,7 +52,7 @@ namespace LMS.Application.Services
         {
             var book = await bookRepository.GetByIdAsync(id) ?? throw new NotFoundException("Book", id);
 
-            await bookRepository.DeleteByIdAsync(id);
+            book.Delete();
             await bookRepository.SaveChangesAsync();
             return book;
         }

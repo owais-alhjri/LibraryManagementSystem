@@ -10,7 +10,7 @@ namespace LMS.Domain.Entities
         public string Author { get; private set; }
 
         public BookState State { get; private set; } = BookState.Available;
-
+        public bool IsDeleted { get; private set; } = false;
         private Book() { }
 
         public Book(string title, string author)
@@ -72,7 +72,7 @@ namespace LMS.Domain.Entities
             if (State == BookState.Available)
                 throw new InvalidOperationException("Book is not borrowed");
 
-            State = BookState.Available;
+            State = BookState.Returned;
         }
 
 
@@ -95,6 +95,11 @@ namespace LMS.Domain.Entities
             }
 
 
+        }
+
+        public void Delete()
+        {
+            IsDeleted = true;
         }
 
     }

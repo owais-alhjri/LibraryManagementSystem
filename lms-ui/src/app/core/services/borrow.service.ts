@@ -24,7 +24,7 @@ export class BorrowService {
     return this.http.post<BorrowRecord>(this.apiUrl, data);
   }
 
-  returnBook(data: ReturnRequest): Observable<ReturnResponse> {
-    return this.http.post<ReturnResponse>(`${this.apiUrl}/return`, data);
-  }
+returnBook(returnData: { bookId: string }): Observable<BorrowRecord> {
+  return this.http.post<BorrowRecord>(`${this.apiUrl}/return`, returnData);
+}
 }
