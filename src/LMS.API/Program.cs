@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
+using LMS.Application.Settings;
 using LMS.Domain.Entities;
 using LMS.Domain.Enums;
 
@@ -40,13 +41,14 @@ builder.Services.AddDbContext<LmsDbContext>(options =>
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBorrowRecordRepository, BorrowRecordRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // Services
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBorrowRecordService, BorrowRecordService>();
 builder.Services.AddScoped<IPasswordHasherService, IdentityPasswordHasher>();
-
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 // Swagger + JWT
 builder.Services.AddEndpointsApiExplorer();
@@ -86,7 +88,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Angular", policy =>
         policy.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 builder.Services

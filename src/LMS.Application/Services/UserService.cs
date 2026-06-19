@@ -12,26 +12,20 @@ namespace LMS.Application.Services
         public async Task<User> AddUserAsync(RegisterUserDto registerUserDto)
         {
             var hashedPassword = passwordHasher.Hash(registerUserDto.Password);
-
             var user = new User(
                 registerUserDto.Name,
                 registerUserDto.Email,
                 hashedPassword);
-
-
-
             await userRepository.AddUserAsync(user);
             await userRepository.SaveChangesAsync();
 
             return user;
         }
-
         public async Task<User> GetUserByEmail(string email)
         {
             var userEmail = await userRepository.GetByEmailAsync(email) ?? throw new NotFoundException("User email ", email);
             return userEmail;
         }
-
         public async Task UpdateRoleAsync(Guid id, Roles role)
         {
             var user = await userRepository.GetByIdAsync(id);
@@ -41,6 +35,10 @@ namespace LMS.Application.Services
             await userRepository.UpdateAsync(user);
         }
 
-
+        public async Task<User> GetUserById(Guid id)
+        {
+            var user = await userRepository.GetByIdAsync(id) ?? throw new NotFoundException("User", id);
+            return user;
+        }
     }
 }

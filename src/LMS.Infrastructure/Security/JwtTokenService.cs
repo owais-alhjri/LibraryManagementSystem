@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using LMS.Application.Interfaces;
+using LMS.Application.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

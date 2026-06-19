@@ -8,6 +8,7 @@ namespace LMS.Application.Interfaces
     {
          Task<User> AddUserAsync(RegisterUserDto registerUserDto);
          Task<User> GetUserByEmail(string email);
+         Task<User> GetUserById(Guid id);
          Task UpdateRoleAsync(Guid id, Roles role);
     }
 }

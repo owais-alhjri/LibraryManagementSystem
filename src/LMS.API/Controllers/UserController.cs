@@ -8,9 +8,12 @@ namespace LMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService userService, IPasswordHasherService hasherService, ITokenService tokenService) : ControllerBase
+    public class UserController(
+        IUserService userService,
+        IPasswordHasherService hasherService,
+        ITokenService tokenService,
+        IRefreshTokenService refreshTokenService) : ControllerBase
     {
-
         [HttpPost]
         public async Task<ActionResult> RegisterUser([FromBody] RegisterUserDto registerUserDto)
         {
@@ -42,8 +45,35 @@ namespace LMS.API.Controllers
                 Role = user.Role
             };
 
-            var token = tokenService.GenerateToken(claims);
-            return Ok(new AuthLoginResponseDto { Token = token });
+            var accessToken = tokenService.GenerateToken(claims);
+            var refreshToken = await refreshTokenService.GenerateAndStoreAsync(user.Id);
+
+            SetRefreshTokenCookie(refreshToken.Token, refreshToken.ExpiresAt);
+            return Ok(new AuthLoginResponseDto { Token = accessToken });
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var token = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(token)) return Unauthorized();
+
+            var refreshToken = await refreshTokenService.ValidateAsync(token);
+            if (refreshToken == null) return Unauthorized();
+
+            var user = await userService.GetUserById(refreshToken.UserId);
+            var newRefreshToken = await refreshTokenService.RotateAsync(refreshToken);
+
+            SetRefreshTokenCookie(newRefreshToken.Token, newRefreshToken.ExpiresAt);
+
+            var claims = new JwtUserClaims
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                Role = user.Role
+            };
+            var accessToken = tokenService.GenerateToken(claims);
+            return Ok(new AuthLoginResponseDto { Token = accessToken });
 
         }
 
@@ -55,7 +85,31 @@ namespace LMS.API.Controllers
             return NoContent();
         }
 
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var token = Request.Cookies["refreshToken"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                var refreshToken = await refreshTokenService.ValidateAsync(token);
+                if (refreshToken != null)
+                {
+                    await refreshTokenService.RevokeAsync(refreshToken);
+                }
+            }
+            Response.Cookies.Delete("refreshToken");
+            return NoContent();
+        }
 
-
+        private void SetRefreshTokenCookie(string token, DateTime expires)
+        {
+            Response.Cookies.Append("refreshToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false, //note that you should flip it to true once using HTTPS
+                SameSite = SameSiteMode.Lax,
+                Expires = expires
+            });
+        }
     }
 }

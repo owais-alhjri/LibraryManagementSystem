@@ -15,6 +15,7 @@ namespace LMS.Infrastructure.Data
         public DbSet<User> Users { get; set; }
 
         public DbSet<BorrowRecord> BorrowRecords { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
 
