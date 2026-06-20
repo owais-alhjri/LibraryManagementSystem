@@ -1,141 +1,134 @@
-# 📚 Library Management System (ASP.NET Core)
+Here's the combined version — backend + frontend in one README, trimmed down to what's essential rather than restating everything we discussed in detail.
+markdown# 📚 Library Management System
 
-## 🚀 Features
-- 📖 Book management (CRUD)
-- 👤 Member/User management
-- 🔐 Authentication & Authorization (JWT / ASP.NET Core Identity)
-- 🔄 Borrow & return books
-- ✅ Input validation (FluentValidation, Data Annotations)
-- ⚠️ Global exception handling (Middleware)
-- 🗄️ PostgreSQL database integration
-- 🐳 Docker support
+A full-stack library management app — ASP.NET Core Web API backend + Angular frontend, in one monorepo.
 
 ## 🛠️ Tech Stack
-- **Backend:** C#, ASP.NET Core  
-- **Security:** JWT, ASP.NET Core Identity  
-- **Persistence:** Entity Framework Core  
-- **Database:** PostgreSQL  
-- **Build Tool:** .NET SDK (CLI)  
-- **Containerization:** Docker, Docker Compose  
+
+**Backend**
+- C# / ASP.NET Core (Clean Architecture: API / Application / Domain / Infrastructure)
+- Custom JWT auth — access token + httpOnly-cookie refresh token, with rotation
+- EF Core + PostgreSQL
+- Swagger / OpenAPI
+- Docker
+
+**Frontend**
+- Angular 19 (standalone components, signals)
+- Angular Material
+- Signal-based `AuthService`, role derived from JWT claims
+- Functional route guards & HTTP interceptors
+- Docker (Nginx)
+
+## 🚀 Features
+- Book management (add/edit/soft-delete) — borrow history is preserved, never destroyed
+- Borrow / return flow with per-user history
+- Role-based access — `ADMIN`, `LIBRARIAN`, `MEMBER`
+- Server-side pagination & search on book listings
+- Silent token refresh — expired access tokens renew automatically, no forced re-login
+- Global error handling — backend returns RFC 7807 `ProblemDetails`; frontend surfaces them via snackbar
+- Consistent loading / empty / error states across all pages (generic `StateView` wrapper component)
+- Admin account auto-seeded on startup
 
 ## 📁 Project Structure
-```
-LibraryManagement/
-│
-└── src/
-├── LMS.API/ # REST API project
-│ ├── Controllers/ # API endpoints
-│ │ ├── BookController.cs
-│ │ ├── BorrowRecordController.cs
-│ │ └── UserController.cs
-│ ├── Middleware/ # Exception handling & other middleware
-│ │ └── ExceptionHandlingMiddleware.cs
-│ └── Properties/ # launchSettings.json
-│ └── launchSettings.json
-│
-├── LMS.Application/ # Business logic
-│ ├── DTOs/ # Data Transfer Objects
-│ │ ├── Book/
-│ │ ├── BorrowRecords/
-│ │ └── User/
-│ ├── Interfaces/ # Service interfaces
-│ ├── Services/ # Business logic implementations
-│ └── Common/Exceptions/ # Custom exception classes
-│
-├── LMS.Domain/ # Entities & repository interfaces
-│ ├── Entities/
-│ ├── Enums/
-│ └── Interfaces/
-│
-└── LMS.Infrastructure/ # EF Core, repositories & security
-├── Data/ # DbContext & EF configurations
-├── Migrations/ # EF migrations
-├── Repositories/ # Repository implementations
-└── Security/ # JWT & password hashing
-```
+LibraryManagementSystem/
 
-## 🔑 API Overview (Sample Endpoints)
+├── src/                        # Backend (ASP.NET Core)
+
+│   ├── LMS.API/                # Controllers, middleware
+
+│   ├── LMS.Application/        # Services, DTOs, settings
+
+│   ├── LMS.Domain/             # Entities, enums, interfaces
+
+│   └── LMS.Infrastructure/     # EF Core, repositories, JWT/security
+
+│
+
+├── lms-ui/                     # Frontend (Angular)
+
+│   └── src/app/
+
+│       ├── core/                # guards, interceptors, services, models
+
+│       ├── features/            # auth, books, borrow, admin
+
+│       └── shared/components/   # book-card, confirm-dialog, state-view, etc.
+
+│
+
+├── docker-compose.yml          # api + db + ui
+
+└── Dockerfile                  # backend image
+
+## 🔑 API Endpoints
 | Method | Endpoint | Description |
-|--------|---------|-------------|
-| POST   | /api/user/register | Register a new user |
-| POST   | /api/user/login    | User login |
-| GET    | /api/books         | Get all books |
-| POST   | /api/books         | Add a new book |
-| PATCH  | /api/books/        | Update book |
-| DELETE | /api/books/        | Delete book |
-| POST   | /api/borrow-records/ | Borrow a book |
-| GET    | /api/borrow-records/ | Borrow record info |
-| POST   | /api/borrow-records/return/ | Return a book |
+|---|---|---|
+| POST | /api/User | Register |
+| POST | /api/User/login | Login (sets refresh-token cookie) |
+| POST | /api/User/refresh | Exchange refresh token for a new access token |
+| POST | /api/User/logout | Revoke refresh token & clear cookie |
+| PATCH | /api/User/{id}/role | Update role *(Admin)* |
+| GET | /api/Book | Paginated, searchable book list |
+| GET | /api/Book/{id} | Get a book |
+| POST | /api/Book | Add a book *(Admin/Librarian)* |
+| PATCH | /api/Book/{id} | Update a book *(Admin/Librarian)* |
+| DELETE | /api/Book/{id} | Soft-delete a book *(Admin/Librarian)* |
+| POST | /api/borrow-records | Borrow a book |
+| GET | /api/borrow-records/{id} | Get a borrow record |
+| GET | /api/borrow-records/my | Current user's borrow history |
+| POST | /api/borrow-records/return | Return a book |
 
 ## ⚙️ Configuration
-Update your `.env` or `appsettings.json` file:
 
+**Backend** — `appsettings.Development.json` (gitignored):
 ```json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=lms_db;Username=postgres;Password=your_password"
-  },
+  "ConnectionStrings": { "DefaultConnection": "Host=localhost;Database=lms_db;Username=postgres;Password=your_password" },
   "JwtSettings": {
-    "Secret": "your_secret_key",
-    "ExpiryMinutes": 1440
-  }
+    "SecretKey": "your_secret_key",
+    "Issuer": "LMS.API",
+    "Audience": "LMS.API",
+    "ExpirationMinutes": 15,
+    "RefreshTokenExpirationDays": 7
+  },
+  "AdminSettings": { "Email": "admin@example.com", "Password": "your_password", "Name": "Admin" }
 }
-▶️ Running the Project
-Option 1: Run locally with .NET
-# Clone the repository
-git clone https://github.com/your-username/library-management-system-dotnet.git
+```
 
-# Navigate to project
-cd LibraryManagement
+**Frontend** — `lms-ui/src/environments/environment.ts`:
+```typescript
+export const environment = { production: false, apiUrl: 'http://localhost:5000/api' };
+```
 
-# Restore dependencies
+**Docker** — same values supplied via `.env` at the repo root (see `docker-compose.yml`).
+
+## ▶️ Running the Project
+
+**Locally** (two terminals):
+```bash
+# Backend
 dotnet restore
-
-# Run the API
 dotnet run --project src/LMS.API/LMS.API.csproj
-The API will be available at:
+# → http://localhost:5000  (Swagger at /swagger)
 
-http://localhost:5000
-Option 2: Run with Docker
-# Build and start services using Docker Compose
+# Frontend
+cd lms-ui
+npm install
+ng serve
+# → http://localhost:4200
+```
+
+**Docker** (everything at once):
+```bash
 docker-compose up --build
-This will run both the API and PostgreSQL database in Docker containers.
+```
+Requires a `.env` file at the repo root with `DB_*`, `JWT_SECRET`, and `ADMIN_*` values.
 
-🧪 Testing
-You can test the APIs using:
+## 🧪 Testing
+Swagger UI (`/swagger`) for backend endpoints. For the auth/borrow flow end-to-end, use the Angular app or a real browser — the cookie-based refresh token won't behave realistically in pure cURL/Postman.
 
-Postman
-
-cURL
-
-🎯 Learning Goals
-Building RESTful APIs with ASP.NET Core
-
-Writing clean, maintainable backend code
-
-Implementing authentication & authorization with JWT
-
-Working with relational databases using EF Core & PostgreSQL
-
-Exception handling and validation best practices
-
-Containerizing apps with Docker
-
-📌 Future Improvements
-Swagger/OpenAPI documentation
-
-Role-based access control (Admin/User)
-
-Pagination & filtering
-
-More advanced Docker setups
-
-Unit & integration tests
-
-👨‍💻 Author
-Owais Al-Hajri
-Final-year Software Engineering student
-Focused on Backend Development with C# / ASP.NET Core
-
-📄 License
-This project is for educational purposes.
+## 📌 Future Improvements
+- Input validation (FluentValidation or Data Annotations) — DTOs currently have none
+- Unit & integration tests
+- HTTPS + `Secure` cookie flag for production
+- Standardize controller route casing (`Book`/`User` vs `borrow-records`)

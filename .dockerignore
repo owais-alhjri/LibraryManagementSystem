@@ -16,3 +16,10 @@ lms-ui/
 lms-ui/node_modules/
 lms-ui/dist/
 lms-ui/.angular/
+
+**/bin/
+**/obj/
+**/.vs/
+#**/appsettings.Development.json
+.git
+.env

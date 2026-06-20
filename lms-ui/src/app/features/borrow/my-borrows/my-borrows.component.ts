@@ -1,5 +1,5 @@
 import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { BorrowService } from '../../../core/services/borrow.service';
 import { BorrowRecord } from '../../../core/models/borrow.model';
 import { MatTableModule } from '@angular/material/table';
@@ -9,9 +9,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { StateViewComponent, ViewState } from '../../../shared/components/state-view/state-view.component';
 
 @Component({
   selector: 'app-my-borrows',
@@ -23,20 +23,27 @@ import { MatDialog } from '@angular/material/dialog';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
     MatChipsModule,
     DatePipe,
+    StateViewComponent,
   ],
   templateUrl: './my-borrows.component.html',
   styleUrl: './my-borrows.component.css',
 })
-export class MyBorrowsComponent {
+export class MyBorrowsComponent implements OnInit {
   private borrowService = inject(BorrowService);
   private dialog = inject(MatDialog);
 
   borrows = signal<BorrowRecord[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
+
+  viewState = computed<ViewState>(() => {
+    if (this.isLoading()) return 'loading';
+    if (this.errorMessage()) return 'error';
+    if (this.borrows().length === 0) return 'empty';
+    return 'success';
+  });
 
   ngOnInit() {
     this.borrowService.getMyBorrowRecords().subscribe({
@@ -61,17 +68,16 @@ export class MyBorrowsComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
-      console.log("return", result);
+
       this.borrowService.returnBook({ bookId: borrowed.bookId }).subscribe({
         next: () => {
           this.borrows.update((records) =>
             records.map((r) =>
-              r.id === borrowed.id 
-              ? { ...r, status: 'Returned', returnedDate: new Date().toISOString() }
-               : r,
-            )
-        );
-        
+              r.id === borrowed.id
+                ? { ...r, status: 'Returned', returnedDate: new Date().toISOString() }
+                : r,
+            ),
+          );
         },
         error: () => {
           console.error('Failed to return book');

@@ -1,19 +1,20 @@
 import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BooksService } from '../../../core/services/books.service';
 import { Book } from '../../../core/models/book.model';
 import { BorrowService } from '../../../core/services/borrow.service';
+import { StateViewComponent, ViewState } from '../../../shared/components/state-view/state-view.component';
 
 @Component({
   selector: 'app-book-detail',
   standalone: true,
-  imports: [],
+  imports: [StateViewComponent],
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.css'
 })
-export class BookDetailComponent {
+export class BookDetailComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private bookService = inject(BooksService);
@@ -25,6 +26,13 @@ export class BookDetailComponent {
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
+
+    viewState = computed<ViewState>(() => {
+    if (this.isLoading()) return 'loading';
+    if (this.errorMessage()) return 'error';
+    if (!this.book()) return 'empty';
+    return 'success';
+  });
 
   ngOnInit(){
     const id = this.route.snapshot.paramMap.get('id');

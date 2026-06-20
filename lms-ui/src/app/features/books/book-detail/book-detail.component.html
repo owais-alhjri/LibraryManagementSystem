@@ -1,9 +1,14 @@
+
 <div>
-  @if (isLoading()) {
-    <p>Loading...</p>
-  } @else if (errorMessage()) {
-    <p>{{ errorMessage() }}</p>
-  } @else if (book()) {
+  <app-state-view
+  [state]="viewState()"
+  loadingMessage="Loading books"
+  emptyIcon="menu_book"
+  emptyTitle="book not found"
+  emptyMessage="Error fetching book details"
+  [errorMessage]="errorMessage() ?? 'Failed to load books. Please try again.'"
+  >
+  <div>
     <h1>{{ book()!.title }}</h1>
     <p>Author: {{ book()!.author }}</p>
     <p>Status: {{ book()!.bookState }}</p>
@@ -11,7 +16,6 @@
     [disabled]="book()?.bookState === 'Borrowed'">
     {{ book()?.bookState === 'Borrowed' ? 'Already Borrowed' : 'Borrow' }}
   </button>
-  } @else {
-    <p>Book not found</p>
-  }
+  </div>
+</app-state-view>
 </div>

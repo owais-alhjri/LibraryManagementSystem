@@ -1,16 +1,13 @@
 <div class="page">
   <h1>My Borrowed Books</h1>
 
-  @if (isLoading()) {
-    <p>Loading...</p>
-  } @else if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
-  } @else if (borrows().length === 0) {
-    <div class="empty-state">
-      <mat-icon>menu_book</mat-icon>
-      <p>No borrowed books found</p>
-    </div>
-  } @else {
+  <app-state-view
+    [state]="viewState()"
+    loadingMessage="Loading your borrowed books..."
+    emptyIcon="menu_book"
+    emptyTitle="No borrowed books found"
+    [errorMessage]="errorMessage() ?? 'Failed to load borrow records.'"
+  >
     <div class="borrowed-grid">
       @for (borrowed of borrows(); track borrowed.id) {
         <div class="borrow-card">
@@ -27,5 +24,5 @@
         </div>
       }
     </div>
-  }
+  </app-state-view>
 </div>

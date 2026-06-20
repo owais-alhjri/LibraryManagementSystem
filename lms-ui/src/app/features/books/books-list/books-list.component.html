@@ -21,38 +21,21 @@
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
-  <!--Error state-->
-  @if (errorMessage()) {
-    <div class="error-message">
-      <mat-icon>error_outline</mat-icon>
-      {{ errorMessage() }}
-    </div>
-  }
-
-  <!-- Loading state -->
-  @if (isLoading()) {
-    <div class="loading-container">
-      <mat-spinner diameter="48" />
-      <p>Loading books...</p>
-    </div>
-  }
-
-  <!--Table-->
-  @if (!isLoading() && !errorMessage()) {
-    @if (books().length == 0) {
-      <div class="empty-state">
-        <mat-icon>menu_book</mat-icon>
-        <p>No books found</p>
-      </div>
-    } @else {
-      <div class="books-grid">
-        @for (book of books(); track book.id) {
-          <app-book-card
-          [book]="book"
-          (deleted)="onBookDeleted($event)"
-          (borrow)="onBorrow($event)" />
-        }
-      </div>
+<app-state-view
+  [state]="viewState()"
+  loadingMessage="Loading books"
+  emptyIcon="menu_book"
+  emptyTitle="No book found"
+  emptyMessage="Try adjusting your search."
+  [errorMessage]="errorMessage() ?? 'Failed to load books. Please try again.'"
+  >
+  <div class="books-grid">
+    @for (book of books(); track book.id) {
+      <app-book-card [book]="book" 
+      (deleted)="onBookDeleted($event)"
+      (borrow)="onBorrow($event)" />
+    }
+  </div>
 
       <!-- Pagination -->
       <mat-paginator
@@ -63,6 +46,5 @@
         (page)="onPageChange($event)"
         showFirstLastButtons
       />
-    }
-  }
+</app-state-view>
 </div>

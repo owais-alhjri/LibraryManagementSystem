@@ -2,8 +2,6 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-.error-snackbar {
-  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
-    background-color: #d32f2f !important;
-  }
-}
+.error-snackbar.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+     background-color: #d32f2f !important;
+   }
