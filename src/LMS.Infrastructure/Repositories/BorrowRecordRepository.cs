@@ -5,26 +5,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Infrastructure.Repositories
 {
-    public class BorrowRecordRepository : IBorrowRecordRepository
+    public class BorrowRecordRepository(LmsDbContext dbContext) : IBorrowRecordRepository
     {
-        private readonly LmsDbContext _dbContext;
-        public BorrowRecordRepository(LmsDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
         public async Task SaveChangesAsync()
         {
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
         public async Task BorrowBookAsync(BorrowRecord borrowRecord)
         {
 
-            await _dbContext.BorrowRecords.AddAsync(borrowRecord);
+            await dbContext.BorrowRecords.AddAsync(borrowRecord);
             
         }
         public Task<BorrowRecord?> GetActiveBorrowAsync(Guid userId, Guid bookId)
         {
-             return _dbContext.BorrowRecords.FirstOrDefaultAsync(br=>
+             return dbContext.BorrowRecords.FirstOrDefaultAsync(br=>
              br.UserId == userId &&
              br.BookId == bookId &&
              br.ReturnedDate == null);
@@ -32,13 +27,13 @@ namespace LMS.Infrastructure.Repositories
 
         public async Task<BorrowRecord?> GetById(Guid id)
         {
-            var borrowed = await _dbContext.BorrowRecords.FindAsync(id);
+            var borrowed = await dbContext.BorrowRecords.FindAsync(id);
             return borrowed;
         }
 
         public async Task<List<BorrowRecord>> GetByUserIdAsync(Guid userId)
         {
-            return await _dbContext.BorrowRecords
+            return await dbContext.BorrowRecords
                 .AsNoTracking()
                 .IgnoreQueryFilters()
                 .Include(r => r.Book)

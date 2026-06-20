@@ -10,5 +10,6 @@ namespace LMS.Application.Interfaces
          Task<User> GetUserByEmail(string email);
          Task<User> GetUserById(Guid id);
          Task UpdateRoleAsync(Guid id, Roles role);
+         Task<List<ResponseUserDto>> GetAllUsersExceptAdminAsync();
     }
 }

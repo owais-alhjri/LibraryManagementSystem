@@ -101,6 +101,14 @@ namespace LMS.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "ADMIN")]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await userService.GetAllUsersExceptAdminAsync();
+            return Ok(users);
+        }
+
         private void SetRefreshTokenCookie(string token, DateTime expires)
         {
             Response.Cookies.Append("refreshToken", token, new CookieOptions

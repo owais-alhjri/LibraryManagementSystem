@@ -40,5 +40,19 @@ namespace LMS.Application.Services
             var user = await userRepository.GetByIdAsync(id) ?? throw new NotFoundException("User", id);
             return user;
         }
+
+        public async Task<List<ResponseUserDto>> GetAllUsersExceptAdminAsync()
+        {
+            var users = await userRepository.GetAllUsersExceptAdminAsync();
+            return users.Select(u => new ResponseUserDto
+            {
+                Email = u.Email,
+                Id = u.Id,
+                Name = u.Name,
+                Role = u.Role.ToString()
+            }).ToList();
+
+        }
+
     }
 }
