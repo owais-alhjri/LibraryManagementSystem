@@ -5,7 +5,7 @@ import { Router } from "@angular/router";
 import { AuthResponse, LoginRequest, TokenPayload } from "../models/auth.model";
 import { Role } from "../models/user.model";
 import { environment } from "../../../environments/environment";
-import { tap } from "rxjs";
+import { finalize, tap } from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class AuthService{
@@ -35,7 +35,8 @@ export class AuthService{
   canManageBooks = computed(() => this.isAdmin() || this.isLibrarian());
 
   login(credentials: LoginRequest){
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/User/login`, credentials).pipe(
+    return this.http.post<AuthResponse>(
+      `${environment.apiUrl}/User/login`, credentials,{withCredentials: true}).pipe(
       tap(res =>{
          this.setToken(res.token);
         this.router.navigate(['/books']);
@@ -44,7 +45,7 @@ export class AuthService{
   }
 
   register(data: RegisterRequest){
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/User`,data).pipe(
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/User`,data, {withCredentials:true}).pipe(
       tap(res =>{
         this.setToken(res.token);
         this.router.navigate(['/books']);
@@ -52,9 +53,28 @@ export class AuthService{
     );
   }
 
+  refreshAccessToken(){
+    return this.http.post<AuthResponse>(
+      `${environment.apiUrl}/User/Refresh`,
+      {},
+      {withCredentials: true}
+    ).pipe(
+      tap(res => this.setToken(res.token))
+    );
+  }
+
   logout(){
+    this.http.post(
+      `${environment.apiUrl}/User/logout`,
+      {},
+      {withCredentials: true}
+    ).pipe(
+      finalize(()=>{
     this.clearToken();
     this.router.navigate(['/auth/login']);
+      })
+    ).subscribe();
+
   }
 
   getToken(): string | null{
