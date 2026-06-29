@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,12 @@ export class AppComponent {
   auth = inject(AuthService);
   router = inject(Router);
   location = inject(Location);
+
+  isSidenavOpen = signal(true);
+
+  toggleSidenav(){
+    this.isSidenavOpen.update(value => !value);
+  }
 
   goBack(){
     this.location.back();

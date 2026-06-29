@@ -1,7 +1,7 @@
 <mat-sidenav-container class="sidenav-container">
 
   <!-- sidebar -->
-   <mat-sidenav mode="side" [opened]="auth.isLoggedIn()">
+  <mat-sidenav mode="push" [opened]="isSidenavOpen()" (openedChange)="isSidenavOpen.set($event)" >
     <mat-nav-list >
       <a mat-list-item routerLink="/books" routerLinkActive="active-link">
         <mat-icon matListItemIcon>menu_book</mat-icon>
@@ -35,6 +35,11 @@
    <mat-sidenav-content>
     <!--Toolbar-->
     <mat-toolbar color="primary">
+      
+<button mat-icon-button (click)="toggleSidenav()">
+  <mat-icon>menu</mat-icon>
+</button>
+      
       <span>LMS</span>
       <span class="spacer"></span>
 
