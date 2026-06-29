@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { AdminGuard } from './core/guards/admin.guard';
+import { manageBooksGuard } from './core/guards/managr-books.guard';
 
 export const routes: Routes = [
   {
@@ -30,6 +31,12 @@ export const routes: Routes = [
     canActivate: [authGuard, AdminGuard],
     loadChildren: () =>
       import('./features/admin/admin.routes').then(m => m.adminRoutes)
+  },
+  {
+    path: 'librarian',
+    canActivate: [authGuard, manageBooksGuard],
+    loadChildren:()=>
+      import('./features/librarian/librarian.routes').then(m => m.librarianRoutes)
   },
   {
     path: '**',

@@ -1,4 +1,4 @@
-import { BooksService } from './../../../core/services/books.service';
+import { BooksService } from '../../../core/services/books.service';
 import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';

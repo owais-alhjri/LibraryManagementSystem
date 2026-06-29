@@ -16,7 +16,7 @@
   </button>
 
   @if (auth.canManageBooks()) {
-    <button color="accent" [routerLink]="['/admin/edit-book', book.id]">
+    <button color="accent" [routerLink]="['/librarian/edit-book', book.id]">
       edit
     </button>
     <button (click)="onDelete()" color="accent">
