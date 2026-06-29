@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { LoadingSpinnerComponent } from '../confirm-dialog/loading-spinner/loading-spinner.component';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../empty-state/empty-state-component';
 
 export type ViewState = 'loading' | 'success' | 'empty' | 'error';

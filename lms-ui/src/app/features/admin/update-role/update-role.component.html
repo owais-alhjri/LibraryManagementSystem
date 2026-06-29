@@ -1,0 +1,16 @@
+<app-state-view
+  [state]="viewState()"
+  loadingMessage="Loading users..."
+  errorMessage="Could not load users. Please try again."
+  emptyIcon="people_outline"
+  emptyTitle="No users found"
+  emptyMessage="There are no users to manage yet."
+>
+
+  @for (user of users(); track user.id) {
+    <h3 >Name: {{ user.name }}</h3>
+    <p>Email: {{ user.email }}</p>
+    <p>Role: {{ user.role }}</p>
+    <button (click)="updateRole(user)">Change Role</button>
+  }
+</app-state-view>

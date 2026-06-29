@@ -3,7 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthResponse, LoginRequest, TokenPayload } from "../models/auth.model";
-import { Role } from "../models/user.model";
+import { Role, UpdateRoleRequest } from "../models/user.model";
 import { environment } from "../../../environments/environment";
 import { finalize, tap } from "rxjs";
 
@@ -33,6 +33,7 @@ export class AuthService{
   isLibrarian = computed(() => this.currentRole() === 'LIBRARIAN');
   isMember = computed(() => this.currentRole() === 'MEMBER');
   canManageBooks = computed(() => this.isAdmin() || this.isLibrarian());
+
 
   login(credentials: LoginRequest){
     return this.http.post<AuthResponse>(

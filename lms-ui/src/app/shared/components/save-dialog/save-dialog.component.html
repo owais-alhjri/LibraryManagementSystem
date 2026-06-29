@@ -1,0 +1,17 @@
+<h2>Select Role</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="role">
+        <mat-option value="MEMBER">Member</mat-option>
+        <mat-option value="LIBRARIAN">Librarian</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button (click)="save()">Save</button>
+</mat-dialog-actions>

@@ -10,3 +10,11 @@ export interface User {
 export interface UpdateRoleRequest {
   role: Role;
 }
+
+export interface UserDto{
+  items: User[];
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+}

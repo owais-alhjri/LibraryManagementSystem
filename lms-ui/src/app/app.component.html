@@ -15,12 +15,19 @@
         </a>
       }
 
-      @if (auth.canManageBooks()) {
-        <a mat-list-item routerLink="/admin" routerLinkActive="active-link">
-          <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-          <span matListItemTitle>Admin</span>
-        </a>
-      }
+@if (auth.canManageBooks()) {
+  <a mat-list-item routerLink="/admin/add-book" routerLinkActive="active-link">
+    <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+    <span matListItemTitle>Admin</span>
+  </a>
+}
+
+@if (auth.isAdmin()) {
+  <a mat-list-item routerLink="/admin/all" routerLinkActive="active-link">
+    <mat-icon matListItemIcon>manage_accounts</mat-icon>
+    <span matListItemTitle>Manage Roles</span>
+  </a>
+}
     </mat-nav-list>
    </mat-sidenav>
 
@@ -43,7 +50,7 @@
     </mat-toolbar>
     <!--Page content-->
     <main class="content">
-      <router-outlet />
+            <router-outlet />
     </main>
    </mat-sidenav-content>
 </mat-sidenav-container>
